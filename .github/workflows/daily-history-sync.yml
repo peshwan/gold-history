@@ -1,15 +1,15 @@
-name: Daily Metals Sync
+name: Daily History JSON Sync
 
 on:
   schedule:
-    - cron: "15 23 * * 1-5" # 23:15 UTC Mon-Fri (after NY close)
+    - cron: "15 23 * * 1-5" # 23:15 UTC Mon-Fri
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  sync:
+  update-history:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,23 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install firebase-admin requests
-
-      - name: Write Firebase service account file
-        run: |
-          printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > serviceAccount.json
-          python -m json.tool serviceAccount.json > /dev/null
-
-      - name: Sync daily prices to Firestore
-        env:
-          FIREBASE_SERVICE_ACCOUNT: serviceAccount.json
-          FIRESTORE_COLLECTION: ${{ vars.FIRESTORE_COLLECTION || 'metals_daily_usd' }}
-          METALS_GOLD_URL: ${{ vars.METALS_GOLD_URL || 'https://api.gold-api.com/price/XAU' }}
-          METALS_SILVER_URL: ${{ vars.METALS_SILVER_URL || 'https://api.gold-api.com/price/XAG' }}
-          METALS_API_URL: ${{ vars.METALS_API_URL }}
-          METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
-          API_AUTH_HEADER: ${{ vars.API_AUTH_HEADER || 'X-API-Key' }}
-        run: python scripts/firestore_daily_sync.py
+          pip install requests
 
       - name: Update history.json
         env:
@@ -62,7 +46,3 @@ jobs:
           git add history.json
           git commit -m "chore: update history.json daily"
           git push
-
-      - name: Cleanup key file
-        if: always()
-        run: rm -f serviceAccount.json
