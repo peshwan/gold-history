@@ -90,7 +90,8 @@ def main() -> None:
     }
 
     merged = sorted(by_date.values(), key=lambda r: r.get("date", ""))
-    history_path.write_text(json.dumps(merged, ensure_ascii=True, separators=(",", ":")), encoding="utf-8")
+    history_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+
 
     print(f"Updated {history_path} with {quote_date}")
 
