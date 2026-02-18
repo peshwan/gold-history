@@ -1,13 +1,17 @@
-name: Daily Firestore Metals Sync
+name: Daily Metals Sync
 
 on:
   schedule:
-    - cron: "15 0 * * 1-5" # 00:15 UTC Monday-Friday
+    - cron: "15 23 * * 1-5" # 23:15 UTC Mon-Fri (after NY close)
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,11 +28,10 @@ jobs:
 
       - name: Write Firebase service account file
         run: |
-          cat << 'EOF' > serviceAccount.json
-          ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          EOF
+          printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > serviceAccount.json
+          python -m json.tool serviceAccount.json > /dev/null
 
-      - name: Run daily sync
+      - name: Sync daily prices to Firestore
         env:
           FIREBASE_SERVICE_ACCOUNT: serviceAccount.json
           FIRESTORE_COLLECTION: ${{ vars.FIRESTORE_COLLECTION || 'metals_daily_usd' }}
@@ -38,6 +41,27 @@ jobs:
           METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
           API_AUTH_HEADER: ${{ vars.API_AUTH_HEADER || 'X-API-Key' }}
         run: python scripts/firestore_daily_sync.py
+
+      - name: Update history.json
+        env:
+          METALS_GOLD_URL: ${{ vars.METALS_GOLD_URL || 'https://api.gold-api.com/price/XAU' }}
+          METALS_SILVER_URL: ${{ vars.METALS_SILVER_URL || 'https://api.gold-api.com/price/XAG' }}
+          METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
+          API_AUTH_HEADER: ${{ vars.API_AUTH_HEADER || 'X-API-Key' }}
+          HISTORY_JSON_PATH: history.json
+        run: python scripts/update_history_json.py
+
+      - name: Commit history.json if changed
+        run: |
+          if git diff --quiet -- history.json; then
+            echo "No history.json changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add history.json
+          git commit -m "chore: update history.json daily"
+          git push
 
       - name: Cleanup key file
         if: always()
