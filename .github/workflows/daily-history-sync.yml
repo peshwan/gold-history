@@ -26,14 +26,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Update history.json
+            - name: Update history.json
         env:
           METALS_GOLD_URL: ${{ vars.METALS_GOLD_URL || 'https://api.gold-api.com/price/XAU' }}
           METALS_SILVER_URL: ${{ vars.METALS_SILVER_URL || 'https://api.gold-api.com/price/XAG' }}
           METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
           API_AUTH_HEADER: ${{ vars.API_AUTH_HEADER || 'X-API-Key' }}
           HISTORY_JSON_PATH: history.json
-         run: python .github/scripts/update_history_json.py
+          run: python .github/scripts/update_history_json.py
+
 
 
       - name: Commit history.json if changed
