@@ -2,7 +2,9 @@ name: Daily History JSON Sync
 
 on:
   schedule:
-    - cron: "15 23 * * 1-5" # 23:15 UTC Mon-Fri
+    - cron: "30 21 * * 1-5"   # 21:30 UTC = 16:30 NY (EST)
+# 23:15 UTC Mon-Fri
+    
   workflow_dispatch:
 
 permissions:
