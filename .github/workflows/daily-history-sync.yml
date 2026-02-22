@@ -2,9 +2,7 @@ name: Daily History JSON Sync
 
 on:
   schedule:
-    - cron: "30 21 * * 1-5"   # 21:30 UTC = 16:30 NY (EST)
-# 23:15 UTC Mon-Fri
-    
+    - cron: "30 21 * * 1-5" # 21:30 UTC Mon-Fri
   workflow_dispatch:
 
 permissions:
@@ -28,14 +26,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Update history.json
+      - name: Update history.json (retry on DNS/network)
         env:
           METALS_GOLD_URL: ${{ vars.METALS_GOLD_URL || 'https://api.gold-api.com/price/XAU' }}
           METALS_SILVER_URL: ${{ vars.METALS_SILVER_URL || 'https://api.gold-api.com/price/XAG' }}
           METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
           API_AUTH_HEADER: ${{ vars.API_AUTH_HEADER || 'X-API-Key' }}
           HISTORY_JSON_PATH: history.json
-        run: python .github/scripts/update_history_json.py
+        run: |
+          for i in 1 2 3; do
+            python .github/scripts/update_history_json.py && exit 0
+            echo "Attempt $i failed, retrying in 20s..."
+            sleep 20
+          done
+          echo "All retries failed"
+          exit 1
 
       - name: Commit history.json if changed
         run: |
