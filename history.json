@@ -16290,5 +16290,12 @@
     "gold_oz": 4475.2998,
     "silver_oz": 71.358,
     "source": "daily-sync"
+  },
+  {
+    "date": "2026-03-25",
+    "timestamp": 1774396800000,
+    "gold_oz": 4507.2998,
+    "silver_oz": 71.381,
+    "source": "daily-sync"
   }
 ]
