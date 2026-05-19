@@ -41,15 +41,32 @@ def get_market_snapshot_info() -> tuple[bool, str]:
     return weekday in (0, 1, 2, 3, 4) and ny_now.hour == 17, ny_now.strftime("%Y-%m-%d")
 
 
+def subtract_years(dt: datetime, years: int) -> datetime:
+    try:
+        return dt.replace(year=dt.year - years)
+    except ValueError:
+        return dt.replace(year=dt.year - years, day=28)
+
+
+def get_cutoff_date(quote_date: str, retention_years: int) -> str:
+    quote_dt = datetime.strptime(quote_date, "%Y-%m-%d").replace(tzinfo=ZoneInfo("UTC"))
+    return subtract_years(quote_dt, retention_years).strftime("%Y-%m-%d")
+
+
+def ensure_firebase_app(service_account: str) -> None:
+    if firebase_admin._apps:
+        return
+    cred = credentials.Certificate(service_account)
+    firebase_admin.initialize_app(cred)
+
+
 def upsert_firestore(quote_date: str, gold_price: float, silver_price: float) -> None:
     service_account = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
     if not service_account:
         print("No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore")
         return
 
-    if not firebase_admin._apps:
-        cred = credentials.Certificate(service_account)
-        firebase_admin.initialize_app(cred)
+    ensure_firebase_app(service_account)
 
     collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
     db = firestore.client()
@@ -67,12 +84,52 @@ def upsert_firestore(quote_date: str, gold_price: float, silver_price: float) ->
     print(f"Upserted {quote_date} into {collection}")
 
 
+def cleanup_firestore_old_history(quote_date: str, retention_years: int) -> None:
+    if retention_years <= 0:
+        return
+
+    service_account = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
+    if not service_account:
+        print("No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore cleanup")
+        return
+
+    ensure_firebase_app(service_account)
+
+    collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
+    cutoff_date = get_cutoff_date(quote_date, retention_years)
+    db = firestore.client()
+    deleted = 0
+
+    while True:
+        old_docs = list(
+            db.collection(collection)
+            .where("date", "<", cutoff_date)
+            .limit(450)
+            .stream()
+        )
+
+        if not old_docs:
+            break
+
+        batch = db.batch()
+        for doc in old_docs:
+            batch.delete(doc.reference)
+            deleted += 1
+        batch.commit()
+
+    if deleted:
+        print(f"Deleted {deleted} old Firestore docs before {cutoff_date}")
+    else:
+        print(f"No old Firestore docs to delete before {cutoff_date}")
+
+
 def main() -> None:
     gold_url = os.environ.get("METALS_GOLD_URL", "https://api.gold-api.com/price/XAU")
     silver_url = os.environ.get("METALS_SILVER_URL", "https://api.gold-api.com/price/XAG")
     api_key = os.environ.get("METALS_API_KEY", "").strip()
     auth_header = os.environ.get("API_AUTH_HEADER", "X-API-Key")
     history_path = Path(os.environ.get("HISTORY_JSON_PATH", "history.json"))
+    retention_years = int(os.environ.get("HISTORY_RETENTION_YEARS", "17"))
 
     should_sync, quote_date = get_market_snapshot_info()
     if not should_sync:
@@ -111,11 +168,19 @@ def main() -> None:
         "source": "daily-sync",
     }
 
-    merged = sorted(by_date.values(), key=lambda r: r.get("date", ""))
+    cutoff_date = get_cutoff_date(quote_date, retention_years)
+    merged = sorted(
+        [row for row in by_date.values() if str(row.get("date", "")) >= cutoff_date],
+        key=lambda r: r.get("date", "")
+    )
+
     history_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print(f"Updated {history_path} with {quote_date}")
+    print(f"Kept {len(merged)} history rows from {cutoff_date} onward")
+
     upsert_firestore(quote_date, gold_price, silver_price)
+    cleanup_firestore_old_history(quote_date, retention_years)
 
 
 if __name__ == "__main__":
