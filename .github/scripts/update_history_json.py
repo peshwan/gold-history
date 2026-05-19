@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-"""
-Update static history.json with today's gold/silver USD close.
-
-Env vars:
-- METALS_GOLD_URL (default: https://api.gold-api.com/price/XAU)
-- METALS_SILVER_URL (default: https://api.gold-api.com/price/XAG)
-- METALS_API_KEY (optional)
-- API_AUTH_HEADER (default: X-API-Key)
-- HISTORY_JSON_PATH (default: history.json)
-"""
-
 from __future__ import annotations
 
 import json
@@ -19,7 +8,9 @@ from pathlib import Path
 from typing import Any, Dict
 from zoneinfo import ZoneInfo
 
+import firebase_admin
 import requests
+from firebase_admin import credentials, firestore
 
 
 def _extract_number(data: Dict[str, Any], keys: list[str]) -> float | None:
@@ -44,9 +35,36 @@ def fetch_spot_price(url: str, headers: Dict[str, str], timeout_s: int = 20) -> 
     return price
 
 
-def get_market_date_ny() -> str:
+def get_market_snapshot_info() -> tuple[bool, str]:
     ny_now = datetime.now(ZoneInfo("America/New_York"))
-    return ny_now.strftime("%Y-%m-%d")
+    weekday = ny_now.weekday()
+    return weekday in (0, 1, 2, 3, 4) and ny_now.hour == 17, ny_now.strftime("%Y-%m-%d")
+
+
+def upsert_firestore(quote_date: str, gold_price: float, silver_price: float) -> None:
+    service_account = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
+    if not service_account:
+        print("No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore")
+        return
+
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(service_account)
+        firebase_admin.initialize_app(cred)
+
+    collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
+    db = firestore.client()
+
+    payload = {
+        "date": quote_date,
+        "ts": datetime.strptime(quote_date, "%Y-%m-%d").replace(tzinfo=ZoneInfo("UTC")),
+        "gold_oz": round(gold_price, 4),
+        "silver_oz": round(silver_price, 4),
+        "source": "daily-sync",
+        "updated_at": firestore.SERVER_TIMESTAMP,
+    }
+
+    db.collection(collection).document(quote_date).set(payload, merge=True)
+    print(f"Upserted {quote_date} into {collection}")
 
 
 def main() -> None:
@@ -56,11 +74,15 @@ def main() -> None:
     auth_header = os.environ.get("API_AUTH_HEADER", "X-API-Key")
     history_path = Path(os.environ.get("HISTORY_JSON_PATH", "history.json"))
 
+    should_sync, quote_date = get_market_snapshot_info()
+    if not should_sync:
+        print(f"Outside NY close capture window. Skip update for {quote_date}.")
+        return
+
     headers = {"Accept": "application/json"}
     if api_key:
         headers[auth_header] = api_key
 
-    quote_date = get_market_date_ny()
     ts = int(datetime.strptime(quote_date, "%Y-%m-%d").replace(tzinfo=ZoneInfo("UTC")).timestamp() * 1000)
 
     gold_price = fetch_spot_price(gold_url, headers)
@@ -92,10 +114,9 @@ def main() -> None:
     merged = sorted(by_date.values(), key=lambda r: r.get("date", ""))
     history_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
 
-
     print(f"Updated {history_path} with {quote_date}")
+    upsert_firestore(quote_date, gold_price, silver_price)
 
 
 if __name__ == "__main__":
     main()
-
