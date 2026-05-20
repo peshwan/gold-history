@@ -1,4 +1,4 @@
- name: Daily History JSON Sync
+name: Daily History JSON Sync
 
 on:
   schedule:
@@ -38,12 +38,12 @@ jobs:
       - name: Update history.json and Firestore
         env:
           FIREBASE_SERVICE_ACCOUNT: serviceAccount.json
-          FIRESTORE_COLLECTION: ${{ vars.FIRESTORE_COLLECTION || 'metals_daily_usd' }}
-          HISTORY_RETENTION_YEARS: ${{ vars.HISTORY_RETENTION_YEARS || '17' }}
-          METALS_GOLD_URL: ${{ vars.METALS_GOLD_URL || 'https://api.gold-api.com/price/XAU' }}
-          METALS_SILVER_URL: ${{ vars.METALS_SILVER_URL || 'https://api.gold-api.com/price/XAG' }}
+          FIRESTORE_COLLECTION: metals_daily_usd
+          HISTORY_RETENTION_YEARS: "17"
+          METALS_GOLD_URL: https://api.gold-api.com/price/XAU
+          METALS_SILVER_URL: https://api.gold-api.com/price/XAG
           METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
-          API_AUTH_HEADER: ${{ vars.API_AUTH_HEADER || 'X-API-Key' }}
+          API_AUTH_HEADER: X-API-Key
           HISTORY_JSON_PATH: history.json
         run: |
           for i in 1 2 3; do
