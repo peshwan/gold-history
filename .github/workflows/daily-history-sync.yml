@@ -2,8 +2,11 @@ name: Daily History JSON Sync
 
 on:
   schedule:
-    - cron: "15 21 * * 1-5"
-    - cron: "15 22 * * 1-5"
+    # Two UTC times so one always lands right after the NY close:
+    #   21:30 UTC = 17:30 NY (summer/DST)
+    #   22:30 UTC = 17:30 NY (winter/standard)
+    - cron: "30 21 * * 1-5"
+    - cron: "30 22 * * 1-5"
   workflow_dispatch:
 
 permissions:
