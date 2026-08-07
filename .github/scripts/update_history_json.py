@@ -36,9 +36,13 @@ def fetch_spot_price(url: str, headers: Dict[str, str], timeout_s: int = 20) -> 
 
 
 def get_market_snapshot_info() -> tuple[bool, str]:
+    # Use New York time for the trading date so the record key is consistent
+    # across DST. Save on weekdays (Mon-Fri) regardless of the exact run hour.
     ny_now = datetime.now(ZoneInfo("America/New_York"))
     weekday = ny_now.weekday()
-    return weekday in (0, 1, 2, 3, 4) and ny_now.hour == 17, ny_now.strftime("%Y-%m-%d")
+    should_sync = weekday in (0, 1, 2, 3, 4)
+    quote_date = ny_now.strftime("%Y-%m-%d")
+    return should_sync, quote_date
 
 
 def subtract_years(dt: datetime, years: int) -> datetime:
@@ -133,7 +137,7 @@ def main() -> None:
 
     should_sync, quote_date = get_market_snapshot_info()
     if not should_sync:
-        print(f"Outside NY close capture window. Skip update for {quote_date}.")
+        print(f"Weekend detected. Skip update for {quote_date}.")
         return
 
     headers = {"Accept": "application/json"}
