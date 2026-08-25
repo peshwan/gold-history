@@ -36,7 +36,6 @@ def fetch_spot_price(url: str, headers: Dict[str, str], timeout_s: int = 20) -> 
 
 
 def get_market_snapshot_info() -> tuple[bool, str]:
-    # Use New York time for trading date consistency
     ny_now = datetime.now(ZoneInfo("America/New_York"))
     weekday = ny_now.weekday()
     should_sync = weekday in (0, 1, 2, 3, 4)
@@ -87,7 +86,7 @@ def upsert_firestore(quote_date: str, gold_price: float, silver_price: float) ->
     }
 
     db.collection(collection).document(quote_date).set(payload, merge=True)
-    print(f"Upserted {quote_date} into {collection}")
+    print(f"Upserted {quote_date} into Firestore collection '{collection}'")
 
 
 def cleanup_firestore_old_history(quote_date: str, retention_years: int) -> None:
@@ -175,12 +174,10 @@ def main() -> None:
         key=lambda r: r.get("date", "")
     )
 
-    # 1. Update and write history.json
     history_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Updated {history_path} with {quote_date}")
     print(f"Kept {len(merged)} history rows from {cutoff_date} onward")
 
-    # 2. Sync to Firestore (wrapped safely so JSON update is always saved to GitHub)
     try:
         upsert_firestore(quote_date, gold_price, silver_price)
         cleanup_firestore_old_history(quote_date, retention_years)
