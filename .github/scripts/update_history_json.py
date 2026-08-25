@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any, Dict
 from zoneinfo import ZoneInfo
 
-import firebase_admin
 import requests
-from firebase_admin import credentials, firestore
+from google.cloud import firestore
+from google.oauth2 import service_account as sa
 
 
 def _extract_number(data: Dict[str, Any], keys: list[str]) -> float | None:
@@ -36,8 +36,6 @@ def fetch_spot_price(url: str, headers: Dict[str, str], timeout_s: int = 20) -> 
 
 
 def get_market_snapshot_info() -> tuple[bool, str]:
-    # Use New York time for the trading date so the record key is consistent
-    # across DST. Save on weekdays (Mon-Fri) regardless of the exact run hour.
     ny_now = datetime.now(ZoneInfo("America/New_York"))
     weekday = ny_now.weekday()
     should_sync = weekday in (0, 1, 2, 3, 4)
@@ -57,11 +55,17 @@ def get_cutoff_date(quote_date: str, retention_years: int) -> str:
     return subtract_years(quote_dt, retention_years).strftime("%Y-%m-%d")
 
 
-def ensure_firebase_app(service_account: str) -> None:
-    if firebase_admin._apps:
-        return
-    cred = credentials.Certificate(service_account)
-    firebase_admin.initialize_app(cred)
+def get_firestore_client(service_account_str: str) -> firestore.Client:
+    """Initialize Firestore Client directly with google-cloud-firestore."""
+    raw = service_account_str.strip()
+    if raw.startswith("{"):
+        cert_dict = json.loads(raw)
+        creds = sa.Credentials.from_service_account_info(cert_dict)
+        project_id = cert_dict.get("project_id")
+        return firestore.Client(project=project_id, credentials=creds)
+    else:
+        creds = sa.Credentials.from_service_account_file(raw)
+        return firestore.Client(credentials=creds)
 
 
 def upsert_firestore(quote_date: str, gold_price: float, silver_price: float) -> None:
@@ -70,10 +74,8 @@ def upsert_firestore(quote_date: str, gold_price: float, silver_price: float) ->
         print("No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore")
         return
 
-    ensure_firebase_app(service_account)
-
+    db = get_firestore_client(service_account)
     collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
-    db = firestore.client()
 
     payload = {
         "date": quote_date,
@@ -97,11 +99,9 @@ def cleanup_firestore_old_history(quote_date: str, retention_years: int) -> None
         print("No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore cleanup")
         return
 
-    ensure_firebase_app(service_account)
-
+    db = get_firestore_client(service_account)
     collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
     cutoff_date = get_cutoff_date(quote_date, retention_years)
-    db = firestore.client()
     deleted = 0
 
     while True:
