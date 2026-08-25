@@ -36,6 +36,7 @@ def fetch_spot_price(url: str, headers: Dict[str, str], timeout_s: int = 20) -> 
 
 
 def get_market_snapshot_info() -> tuple[bool, str]:
+    # Use New York time for trading date consistency
     ny_now = datetime.now(ZoneInfo("America/New_York"))
     weekday = ny_now.weekday()
     should_sync = weekday in (0, 1, 2, 3, 4)
@@ -56,7 +57,6 @@ def get_cutoff_date(quote_date: str, retention_years: int) -> str:
 
 
 def get_firestore_client(service_account_str: str) -> firestore.Client:
-    """Initialize Firestore Client directly with google-cloud-firestore."""
     raw = service_account_str.strip()
     if raw.startswith("{"):
         cert_dict = json.loads(raw)
@@ -96,7 +96,6 @@ def cleanup_firestore_old_history(quote_date: str, retention_years: int) -> None
 
     service_account = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
     if not service_account:
-        print("No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore cleanup")
         return
 
     db = get_firestore_client(service_account)
@@ -123,8 +122,6 @@ def cleanup_firestore_old_history(quote_date: str, retention_years: int) -> None
 
     if deleted:
         print(f"Deleted {deleted} old Firestore docs before {cutoff_date}")
-    else:
-        print(f"No old Firestore docs to delete before {cutoff_date}")
 
 
 def main() -> None:
@@ -178,13 +175,17 @@ def main() -> None:
         key=lambda r: r.get("date", "")
     )
 
+    # 1. Update and write history.json
     history_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
-
     print(f"Updated {history_path} with {quote_date}")
     print(f"Kept {len(merged)} history rows from {cutoff_date} onward")
 
-    upsert_firestore(quote_date, gold_price, silver_price)
-    cleanup_firestore_old_history(quote_date, retention_years)
+    # 2. Sync to Firestore (wrapped safely so JSON update is always saved to GitHub)
+    try:
+        upsert_firestore(quote_date, gold_price, silver_price)
+        cleanup_firestore_old_history(quote_date, retention_years)
+    except Exception as e:
+        print(f"Firestore sync warning: {e}")
 
 
 if __name__ == "__main__":
