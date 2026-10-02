@@ -2,18 +2,31 @@ name: Daily History JSON Sync
 
 on:
   schedule:
-    # Two UTC times so one always lands right after the NY close:
-    #   21:30 UTC = 17:30 NY (summer/DST)
-    #   22:30 UTC = 17:30 NY (winter/standard)
+    # Two UTC times, so that exactly ONE of them lands inside the New York close
+    # hour in either DST state:
+    #   EDT (UTC-4): 21:30 UTC = 17:30 NY   (the 22:30 UTC run is 18:30 NY)
+    #   EST (UTC-5): 22:30 UTC = 17:30 NY   (the 21:30 UTC run is 16:30 NY)
+    #
+    # Both crons fire; the SCRIPT decides which one writes. It requires
+    # hour >= 17 in New York (rejecting the winter mid-session run) and refuses
+    # to overwrite a day it has already recorded (rejecting the second run).
+    # Do not add an hour guard here instead - the script owns that logic.
     - cron: "30 21 * * 1-5"
     - cron: "30 22 * * 1-5"
   workflow_dispatch:
+    inputs:
+      force_today:
+        description: "Rewrite today's close even if it was already recorded"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+# Never let a scheduled run and a manual run race each other on `git push`.
+concurrency:
+  group: daily-history-json-sync
+  cancel-in-progress: false
 
 jobs:
   update-history:
@@ -48,8 +61,12 @@ jobs:
           METALS_API_KEY: ${{ secrets.METALS_API_KEY }}
           API_AUTH_HEADER: X-API-Key
           HISTORY_JSON_PATH: history.json
+          # Empty/false on schedule runs. Set from the manual trigger input.
+          SYNC_FORCE_TODAY: ${{ inputs.force_today && '1' || '0' }}
         run: |
           for i in 1 2 3; do
+            # Exits 0 when it skips (weekend, before 17:00 NY, already recorded),
+            # so the retry loop only retries genuine failures such as API errors.
             python .github/scripts/update_history_json.py && exit 0
             echo "Attempt $i failed, retrying in 20s..."
             sleep 20
@@ -59,13 +76,15 @@ jobs:
 
       - name: Commit history.json if changed
         run: |
-          if git diff --quiet -- history.json; then
+          git add history.json
+          # --cached is required: plain `git diff` does not see an untracked or
+          # newly created history.json, which would silently skip the commit.
+          if git diff --cached --quiet -- history.json; then
             echo "No history.json changes"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add history.json
           git commit -m "chore: update history.json daily"
           git push
 
