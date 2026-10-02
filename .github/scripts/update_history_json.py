@@ -1,171 +1,305 @@
+#!/usr/bin/env python3
 """
-End-to-end test of the deployable gold-history sync script.
+Record the New York trading-day gold/silver close into history.json + Firestore.
 
-Runs the REAL main() with the network and Firestore mocked out, to prove:
-  1. the first run of the day writes exactly one row
-  2. the second run of the day does NOT overwrite that close
-  3. SYNC_FORCE_TODAY=1 does overwrite it
-  4. `timestamp` is the real observation time, not midnight UTC of the NY date
-  5. a weekend / pre-close run writes nothing at all
+COPY THIS FILE to `.github/scripts/update_history_json.py` in the
+`peshwan/gold-history` repository. That is the repo the Android app reads
+history.json from (see staticHistoryUrl in services/priceService.ts), and it is
+where this script actually runs.
+
+Why the close-hour guard exists
+-------------------------------
+The workflow fires at TWO UTC times so that one of them lands inside the New York
+close hour in either DST state:
+
+    EDT (UTC-4):  21:30 UTC = 17:30 NY   (the 22:30 UTC run is 18:30 NY)
+    EST (UTC-5):  22:30 UTC = 17:30 NY   (the 21:30 UTC run is 16:30 NY)
+
+Without a guard BOTH runs write. In winter the 21:30 UTC run captures a
+MID-SESSION price (16:30 NY, market still open) and stamps it as the day's
+close, then overwrites it an hour later - so the close you see depends on when
+you happen to look. Two mechanisms prevent that:
+
+    1. hour >= 17 guard       -> rejects the winter 21:30 UTC run
+    2. already-recorded check -> rejects the second run of the day
+
+Together they guarantee exactly ONE close per NY session, always at or after
+17:00 ET. Neither mechanism is sufficient alone.
+
+`ts` is the REAL observation time. Stamping it at midnight UTC of the NY date
+claims the price was seen ~21.5 hours before it actually was, and resolves back
+to the PREVIOUS New York trading day.
+
+Env vars:
+- METALS_GOLD_URL / METALS_SILVER_URL  (defaults: gold-api.com XAU / XAG)
+- METALS_API_KEY / API_AUTH_HEADER     (optional)
+- HISTORY_JSON_PATH                   (default: history.json)
+- HISTORY_RETENTION_YEARS             (default: 17)
+- FIRESTORE_COLLECTION                (default: metals_daily_usd)
+- FIREBASE_SERVICE_ACCOUNT            (path to json, or the json itself)
+- SYNC_FORCE_TODAY                    (1/true: rewrite today even if recorded)
 """
 
-import importlib.util
+from __future__ import annotations
+
 import json
 import os
-import sys
-import tempfile
-import types
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict
 from zoneinfo import ZoneInfo
 
-SCRIPT = "scripts/gold_history/update_history_json.py"
+import requests
+from google.cloud import firestore
+from google.oauth2 import service_account as sa
+
 NY = ZoneInfo("America/New_York")
-UTC = timezone.utc
+UTC = ZoneInfo("UTC")
 
-failures = 0
-
-
-def check(label, actual, expected):
-    global failures
-    ok = actual == expected
-    if not ok:
-        failures += 1
-    print(f"{'PASS' if ok else 'FAIL'}  {label}\n        got={actual!r}\n        want={expected!r}")
+# The NY spot session closes at 17:00 ET. Anything earlier is mid-session.
+NY_CLOSE_HOUR = 17
 
 
-# ---- stub the network + Firestore so main() runs offline -------------------
-class FakeResponse:
-    def __init__(self, price):
-        self._price = price
-
-    def raise_for_status(self):
-        pass
-
-    def json(self):
-        return {"price": self._price}
-
-
-PRICE = {"gold": 4099.5, "silver": 47.25}
-FETCHES = []
+def _extract_number(data: Dict[str, Any], keys: list[str]) -> float | None:
+    for key in keys:
+        value = data.get(key)
+        if value is None:
+            continue
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            continue
+    return None
 
 
-def fake_get(url, headers=None, timeout=None):
-    FETCHES.append(url)
-    return FakeResponse(PRICE["gold"] if "XAU" in url else PRICE["silver"])
+def fetch_spot_price(url: str, headers: Dict[str, str], timeout_s: int = 20) -> float:
+    response = requests.get(url, headers=headers, timeout=timeout_s)
+    response.raise_for_status()
+    data = response.json()
+    price = _extract_number(data, ["price", "xau", "xag", "gold", "silver", "value"])
+    if price is None:
+        raise ValueError(f"Could not parse price from {url}. Response keys: {list(data.keys())}")
+    return price
 
 
-try:  # pragma: no cover
-    import requests
-    requests.get = fake_get
-except ImportError:  # pragma: no cover
-    m = types.ModuleType("requests")
-    m.__path__ = []
-    m.get = fake_get
-    sys.modules["requests"] = m
-
-if "google.cloud.firestore" not in sys.modules:
-    fs_mod = types.ModuleType("google.cloud.firestore")
-    fs_mod.SERVER_TIMESTAMP = "SERVER_TIMESTAMP"
-    sys.modules["google.cloud.firestore"] = fs_mod
-    import google.cloud
-    google.cloud.firestore = fs_mod
-
-if "google.oauth2.service_account" not in sys.modules:
-    sa_mod = types.ModuleType("google.oauth2.service_account")
-    sa_mod.Credentials = object
-    sys.modules["google.oauth2.service_account"] = sa_mod
-    import google.oauth2
-    google.oauth2.service_account = sa_mod
+def force_today() -> bool:
+    """Escape hatch for workflow_dispatch: rewrite today even if already stored."""
+    return os.environ.get("SYNC_FORCE_TODAY", "").strip().lower() in ("1", "true", "yes")
 
 
-def load():
-    spec = importlib.util.spec_from_file_location("gh_sync", SCRIPT)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+def get_market_snapshot_info() -> tuple[bool, str, str]:
+    """
+    Decide whether "now" is a valid moment to record today's New York close.
 
-    class FakeDatetime(datetime):
-        _now = None
+    Returns (should_sync, quote_date, reason_when_not_syncing). quote_date is the
+    New York trading day and stays the Firestore document id.
+    """
+    ny_now = datetime.now(NY)
+    quote_date = ny_now.strftime("%Y-%m-%d")
 
-        @classmethod
-        def now(cls, tz=None):
-            return cls._now.astimezone(tz) if tz is not None else cls._now
+    if ny_now.weekday() > 4:
+        return False, quote_date, f"weekend, no NY session on {quote_date}"
+    if ny_now.hour < NY_CLOSE_HOUR:
+        return False, quote_date, (
+            f"now {ny_now:%H:%M} NY is before the {NY_CLOSE_HOUR}:00 ET close"
+        )
 
-    mod.datetime = FakeDatetime
-    return mod, FakeDatetime
+    return True, quote_date, ""
 
 
-def run(mod, dt_class, utc_iso, tmp, extra_env=None):
-    """Invoke the real main() with a pinned clock and an isolated history.json."""
-    dt_class._now = datetime.fromisoformat(utc_iso).replace(tzinfo=UTC)
-    hist = Path(tmp) / "history.json"
-    env = {
-        "HISTORY_JSON_PATH": str(hist),
-        "HISTORY_RETENTION_YEARS": "17",
-    }
-    # No FIREBASE_SERVICE_ACCOUNT -> Firestore is skipped cleanly.
-    env.update(extra_env or {})
-    old = {k: os.environ.get(k) for k in env}
-    os.environ.update(env)
+def subtract_years(dt: datetime, years: int) -> datetime:
     try:
-        FETCHES.clear()
-        mod.main()
-    finally:
-        for k, v in old.items():
-            if v is None:
-                os.environ.pop(k, None)
-            else:
-                os.environ[k] = v
-    return json.loads(hist.read_text()) if hist.exists() else []
+        return dt.replace(year=dt.year - years)
+    except ValueError:
+        return dt.replace(year=dt.year - years, day=28)
 
 
-with tempfile.TemporaryDirectory() as tmp:
-    mod, DT = load()
+def get_cutoff_date(quote_date: str, retention_years: int) -> str:
+    quote_dt = datetime.strptime(quote_date, "%Y-%m-%d").replace(tzinfo=UTC)
+    return subtract_years(quote_dt, retention_years).strftime("%Y-%m-%d")
 
-    print("--- run 1: first run of the session writes the close ---")
-    # Thursday 1 Oct 2026, 17:30 NY = 21:30 UTC (EDT)
-    rows = run(mod, DT, "2026-10-01T21:30:00", tmp)
-    check("one row written", len(rows), 1)
-    check("row date is the NY trading day", rows[0]["date"], "2026-10-01")
-    check("gold price captured", rows[0]["gold_oz"], PRICE["gold"])
-    check("silver price captured", rows[0]["silver_oz"], PRICE["silver"])
-    check("both endpoints were polled", len(FETCHES), 2)
-    first_ts = rows[0]["timestamp"]
-    check(
-        "timestamp is the real observation time",
-        datetime.fromtimestamp(first_ts / 1000, tz=UTC),
-        datetime(2026, 10, 1, 21, 30, tzinfo=UTC),
+
+def get_firestore_client(service_account_str: str) -> firestore.Client:
+    raw = service_account_str.strip()
+    if raw.startswith("{"):
+        cert_dict = json.loads(raw)
+        creds = sa.Credentials.from_service_account_info(cert_dict)
+        project_id = cert_dict.get("project_id")
+        return firestore.Client(project=project_id, credentials=creds)
+    else:
+        creds = sa.Credentials.from_service_account_file(raw)
+        return firestore.Client(credentials=creds)
+def upsert_firestore(
+    quote_date: str,
+    observed_at: datetime,
+    gold_price: float,
+    silver_price: float,
+) -> str | None:
+    """
+    Upsert the close into Firestore.
+
+    Returns None when the write happened, or a human-readable reason when it was
+    intentionally skipped (missing credentials / already recorded today).
+    """
+    service_account = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
+    if not service_account:
+        return "No FIREBASE_SERVICE_ACCOUNT set; skipping Firestore"
+
+    db = get_firestore_client(service_account)
+    collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
+    doc_ref = db.collection(collection).document(quote_date)
+
+    # Second run of the day must not rewrite the close captured by the first.
+    existing = doc_ref.get()
+    if existing.exists and not force_today():
+        data = existing.to_dict() or {}
+        return (
+            f"{quote_date} already recorded in '{collection}' "
+            f"(gold_oz={data.get('gold_oz')}) - keeping that close. "
+            f"Set SYNC_FORCE_TODAY=1 to overwrite."
+        )
+
+    payload = {
+        "date": quote_date,
+        # Real observation time, not midnight UTC of the NY date (which resolves
+        # back to the PREVIOUS New York trading day).
+        "ts": observed_at,
+        "gold_oz": round(gold_price, 4),
+        "silver_oz": round(silver_price, 4),
+        "source": "daily-sync",
+        "updated_at": firestore.SERVER_TIMESTAMP,
+    }
+
+    doc_ref.set(payload, merge=True)
+    print(f"Upserted {quote_date} into Firestore collection '{collection}'")
+    return None
+
+
+def cleanup_firestore_old_history(quote_date: str, retention_years: int) -> None:
+    if retention_years <= 0:
+        return
+
+    service_account = os.environ.get("FIREBASE_SERVICE_ACCOUNT", "").strip()
+    if not service_account:
+        return
+
+    db = get_firestore_client(service_account)
+    collection = os.environ.get("FIRESTORE_COLLECTION", "metals_daily_usd")
+    cutoff_date = get_cutoff_date(quote_date, retention_years)
+    deleted = 0
+
+    # Hard iteration cap so a failing delete cannot spin forever.
+    max_batches = 200
+    for _ in range(max_batches):
+        old_docs = list(
+            db.collection(collection)
+            .where("date", "<", cutoff_date)
+            .limit(450)
+            .stream()
+        )
+        if not old_docs:
+            break
+
+        batch = db.batch()
+        for doc in old_docs:
+            batch.delete(doc.reference)
+            deleted += 1
+        batch.commit()
+    else:
+        print(
+            f"WARNING: stopped after {max_batches} delete batches; "
+            f"re-run the workflow to continue pruning"
+        )
+
+    if deleted:
+        print(f"Deleted {deleted} old Firestore docs before {cutoff_date}")
+def main() -> None:
+    gold_url = os.environ.get("METALS_GOLD_URL", "https://api.gold-api.com/price/XAU")
+    silver_url = os.environ.get("METALS_SILVER_URL", "https://api.gold-api.com/price/XAG")
+    api_key = os.environ.get("METALS_API_KEY", "").strip()
+    auth_header = os.environ.get("API_AUTH_HEADER", "X-API-Key")
+    history_path = Path(os.environ.get("HISTORY_JSON_PATH", "history.json"))
+    retention_years = int(os.environ.get("HISTORY_RETENTION_YEARS", "17"))
+
+    should_sync, quote_date, reason = get_market_snapshot_info()
+    if not should_sync:
+        print(f"Skip close capture for {quote_date}: {reason}")
+        return
+
+    # REAL observation time - see the module docstring.
+    observed_at = datetime.now(UTC)
+    ts = int(observed_at.timestamp() * 1000)
+
+    headers = {"Accept": "application/json"}
+    if api_key:
+        headers[auth_header] = api_key
+
+    gold_price = fetch_spot_price(gold_url, headers)
+    silver_price = fetch_spot_price(silver_url, headers)
+    print(
+        f"NY close for {quote_date}: gold={gold_price} silver={silver_price} "
+        f"(observed {observed_at:%Y-%m-%d %H:%M} UTC)"
     )
-    check(
-        "timestamp resolves to the correct NY day",
-        datetime.fromtimestamp(first_ts / 1000, tz=UTC).astimezone(NY).strftime("%Y-%m-%d"),
-        "2026-10-01",
-    )
 
-    print("\n--- run 2: second cron of the day must NOT overwrite ---")
-    PRICE["gold"] = 9999.0  # pretend the market moved after the close
-    rows = run(mod, DT, "2026-10-01T22:30:00", tmp)
-    check("still one row", len(rows), 1)
-    check("close preserved, not overwritten", rows[0]["gold_oz"], 4099.5)  # not 9999.0
-    check("timestamp preserved too", rows[0]["timestamp"], first_ts)
+    if history_path.exists():
+        data = json.loads(history_path.read_text(encoding="utf-8"))
+        if not isinstance(data, list):
+            raise ValueError("history.json must contain a JSON array")
+    else:
+        data = []
 
-    print("\n--- run 3: SYNC_FORCE_TODAY=1 overrides ---")
-    rows = run(mod, DT, "2026-10-01T22:30:00", tmp, {"SYNC_FORCE_TODAY": "1"})
-    check("force rewrote the close", rows[0]["gold_oz"], 9999.0)
-    check("still one row", len(rows), 1)
-    PRICE["gold"] = 4099.5
+    by_date: Dict[str, Dict[str, Any]] = {}
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        d = str(row.get("date", "")).strip()
+        if d:
+            by_date[d] = row
 
-    print("\n--- run 4: next weekday adds a new row, both kept ---")
-    rows = run(mod, DT, "2026-10-02T21:30:00", tmp)
-    check("two rows now", len(rows), 2)
-    check("sorted by date", [r["date"] for r in rows], ["2026-10-01", "2026-10-02"])
+    # One close per NY session. The second cron of the day must not rewrite the
+    # value captured by the first.
+    existing = by_date.get(quote_date)
+    if existing is not None and not force_today():
+        print(
+            f"{quote_date} already recorded in {history_path} "
+            f"(gold_oz={existing.get('gold_oz')}, silver_oz={existing.get('silver_oz')}) "
+            f"- keeping that close. Set SYNC_FORCE_TODAY=1 to overwrite."
+        )
+    else:
+        if existing is not None:
+            print(
+                f"WARNING SYNC_FORCE_TODAY: rewriting {quote_date} "
+                f"{existing.get('gold_oz')} -> {round(gold_price, 4)}"
+            )
 
-    print("\n--- run 5: pre-close and weekend runs write nothing ---")
-    rows = run(mod, DT, "2026-10-05T16:30:00", tmp)  # Mon 13:30 NY
-    check("pre-close: no extra row", len(rows), 2)
-    rows = run(mod, DT, "2026-10-03T21:30:00", tmp)  # Saturday
-    check("weekend: no extra row", len(rows), 2)
-    check("no price fetched on skipped runs", len(FETCHES), 0)
+        by_date[quote_date] = {
+            "date": quote_date,
+            "timestamp": ts,
+            "gold_oz": round(gold_price, 4),
+            "silver_oz": round(silver_price, 4),
+            "source": "daily-sync",
+        }
 
-print(f"\n{'ALL CHECKS PASSED' if failures == 0 else str(failures) + ' CHECK(S) FAILED'}")
-sys.exit(0 if failures == 0 else 1)
+        cutoff_date = get_cutoff_date(quote_date, retention_years)
+        merged = sorted(
+            [row for row in by_date.values() if str(row.get("date", "")) >= cutoff_date],
+            key=lambda r: r.get("date", ""),
+        )
+
+        history_path.write_text(json.dumps(merged, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"Updated {history_path} with {quote_date}")
+        print(f"Kept {len(merged)} history rows from {cutoff_date} onward")
+
+    # Firestore is best-effort. history.json is already written by this point, so
+    # a Firestore outage must not fail the run and skip the git commit.
+    try:
+        skip_reason = upsert_firestore(quote_date, observed_at, gold_price, silver_price)
+        if skip_reason:
+            print(skip_reason)
+        cleanup_firestore_old_history(quote_date, retention_years)
+    except Exception as e:
+        print(f"Firestore sync warning: {e}")
+
+
+if __name__ == "__main__":
+    main()
