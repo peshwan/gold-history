@@ -16482,730 +16482,772 @@
   },
   {
     "date": "2026-05-01",
-    "timestamp": 1777593600000,
-    "gold_oz": 4615.3999,
+    "timestamp": 1777671000000,
+    "gold_oz": 4616.19,
     "silver_oz": 75.472,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-04",
-    "timestamp": 1777852800000,
-    "gold_oz": 4523.5,
-    "silver_oz": 72.851,
+    "timestamp": 1777930200000,
+    "gold_oz": 4523.66,
+    "silver_oz": 75.653,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-05",
-    "timestamp": 1777939200000,
-    "gold_oz": 4558.6001,
-    "silver_oz": 72.957,
+    "timestamp": 1778016600000,
+    "gold_oz": 4557.6,
+    "silver_oz": 72.692,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-06",
-    "timestamp": 1778025600000,
-    "gold_oz": 4692.0,
-    "silver_oz": 77.487,
+    "timestamp": 1778103000000,
+    "gold_oz": 4691.02,
+    "silver_oz": 72.783,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-07",
-    "timestamp": 1778112000000,
-    "gold_oz": 4687.6001,
-    "silver_oz": 78.533,
+    "timestamp": 1778189400000,
+    "gold_oz": 4687.27,
+    "silver_oz": 77.318,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-08",
-    "timestamp": 1778198400000,
-    "gold_oz": 4715.7002,
-    "silver_oz": 80.468,
+    "timestamp": 1778275800000,
+    "gold_oz": 4715.2,
+    "silver_oz": 78.486,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-11",
-    "timestamp": 1778457600000,
-    "gold_oz": 4736.5,
-    "silver_oz": 86.227,
+    "timestamp": 1778535000000,
+    "gold_oz": 4734.8,
+    "silver_oz": 79.954,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-12",
-    "timestamp": 1778544000000,
-    "gold_oz": 4716.3999,
-    "silver_oz": 86.694,
+    "timestamp": 1778621400000,
+    "gold_oz": 4715.34,
+    "silver_oz": 86.069,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-13",
-    "timestamp": 1778630400000,
-    "gold_oz": 4690.2002,
-    "silver_oz": 87.637,
+    "timestamp": 1778707800000,
+    "gold_oz": 4688.95,
+    "silver_oz": 86.517,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-14",
-    "timestamp": 1778716800000,
-    "gold_oz": 4653.0,
-    "silver_oz": 83.614,
+    "timestamp": 1778794200000,
+    "gold_oz": 4652.5,
+    "silver_oz": 87.464,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-15",
-    "timestamp": 1778803200000,
-    "gold_oz": 4541.2002,
-    "silver_oz": 76.092,
+    "timestamp": 1778880600000,
+    "gold_oz": 4538.28,
+    "silver_oz": 83.51,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-18",
-    "timestamp": 1779062400000,
-    "gold_oz": 4567.3999,
-    "silver_oz": 77.806,
+    "timestamp": 1779139800000,
+    "gold_oz": 4566.31,
+    "silver_oz": 76.632,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-19",
-    "timestamp": 1779148800000,
-    "gold_oz": 4483.1001,
-    "silver_oz": 73.811,
+    "timestamp": 1779226200000,
+    "gold_oz": 4481.91,
+    "silver_oz": 77.668,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-20",
-    "timestamp": 1779235200000,
-    "gold_oz": 4545.1001,
-    "silver_oz": 75.995,
+    "timestamp": 1779312600000,
+    "gold_oz": 4543.85,
+    "silver_oz": 73.681,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-21",
-    "timestamp": 1779321600000,
-    "gold_oz": 4544.1001,
-    "silver_oz": 76.806,
+    "timestamp": 1779399000000,
+    "gold_oz": 4543.0,
+    "silver_oz": 75.832,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-22",
-    "timestamp": 1779408000000,
-    "gold_oz": 4510.5,
-    "silver_oz": 75.643,
+    "timestamp": 1779485400000,
+    "gold_oz": 4506.96,
+    "silver_oz": 76.656,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-25",
-    "timestamp": 1779667200000,
-    "gold_oz": 4571.2998,
-    "silver_oz": 78.195,
+    "timestamp": 1779744600000,
+    "gold_oz": 4570.87,
+    "silver_oz": 78.163,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-26",
-    "timestamp": 1779753600000,
-    "gold_oz": 4508.3999,
-    "silver_oz": 77.098,
+    "timestamp": 1779831000000,
+    "gold_oz": 4507.7,
+    "silver_oz": 78.04,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-27",
-    "timestamp": 1779840000000,
-    "gold_oz": 4457.5,
-    "silver_oz": 74.772,
+    "timestamp": 1779917400000,
+    "gold_oz": 4456.43,
+    "silver_oz": 76.936,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-28",
-    "timestamp": 1779926400000,
-    "gold_oz": 4497.0,
-    "silver_oz": 75.778,
+    "timestamp": 1780003800000,
+    "gold_oz": 4495.58,
+    "silver_oz": 74.628,
     "source": "daily-sync"
   },
   {
     "date": "2026-05-29",
-    "timestamp": 1780012800000,
-    "gold_oz": 4540.2998,
-    "silver_oz": 75.4,
+    "timestamp": 1780090200000,
+    "gold_oz": 4539.83,
+    "silver_oz": 75.628,
+    "source": "daily-sync"
+  },
+  {
+    "date": "2026-06-01",
+    "timestamp": 1780349400000,
+    "gold_oz": 4484.86,
+    "silver_oz": 75.543,
+    "source": "daily-sync"
+  },
+  {
+    "date": "2026-06-02",
+    "timestamp": 1780435800000,
+    "gold_oz": 4488.06,
+    "silver_oz": 74.825,
+    "source": "daily-sync"
+  },
+  {
+    "date": "2026-06-03",
+    "timestamp": 1780522200000,
+    "gold_oz": 4434.3,
+    "silver_oz": 75.112,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-04",
-    "timestamp": 1780531200000,
-    "gold_oz": 4476.2002,
-    "silver_oz": 74.007,
+    "timestamp": 1780608600000,
+    "gold_oz": 4475.41,
+    "silver_oz": 72.714,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-05",
-    "timestamp": 1780617600000,
-    "gold_oz": 4330.0,
-    "silver_oz": 67.965,
+    "timestamp": 1780695000000,
+    "gold_oz": 4327.74,
+    "silver_oz": 73.875,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-08",
-    "timestamp": 1780876800000,
-    "gold_oz": 4331.2998,
-    "silver_oz": 68.298,
+    "timestamp": 1780954200000,
+    "gold_oz": 4329.9,
+    "silver_oz": 68.175,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-09",
-    "timestamp": 1780963200000,
-    "gold_oz": 4260.6001,
-    "silver_oz": 65.461,
+    "timestamp": 1781040600000,
+    "gold_oz": 4259.66,
+    "silver_oz": 68.154,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-10",
-    "timestamp": 1781049600000,
-    "gold_oz": 4072.3,
-    "silver_oz": 63.539,
+    "timestamp": 1781127000000,
+    "gold_oz": 4071.52,
+    "silver_oz": 65.306,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-11",
-    "timestamp": 1781136000000,
-    "gold_oz": 4212.7002,
-    "silver_oz": 67.481,
+    "timestamp": 1781213400000,
+    "gold_oz": 4210.97,
+    "silver_oz": 63.383,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-12",
-    "timestamp": 1781222400000,
-    "gold_oz": 4220.2998,
-    "silver_oz": 68.157,
+    "timestamp": 1781299800000,
+    "gold_oz": 4216.98,
+    "silver_oz": 67.319,
+    "source": "daily-sync"
+  },
+  {
+    "date": "2026-06-15",
+    "timestamp": 1781559000000,
+    "gold_oz": 4309.28,
+    "silver_oz": 70.295,
+    "source": "daily-sync"
+  },
+  {
+    "date": "2026-06-16",
+    "timestamp": 1781645400000,
+    "gold_oz": 4331.39,
+    "silver_oz": 69.953,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-17",
-    "timestamp": 1781654400000,
-    "gold_oz": 4257.8999,
-    "silver_oz": 68.043,
+    "timestamp": 1781731800000,
+    "gold_oz": 4257.98,
+    "silver_oz": 70.01,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-18",
-    "timestamp": 1781740800000,
-    "gold_oz": 4210.3999,
-    "silver_oz": 65.825,
+    "timestamp": 1781818200000,
+    "gold_oz": 4208.97,
+    "silver_oz": 67.923,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-19",
-    "timestamp": 1781827200000,
-    "gold_oz": 4156.7002,
-    "silver_oz": 64.961,
+    "timestamp": 1781904600000,
+    "gold_oz": 4155.62,
+    "silver_oz": 65.705,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-22",
-    "timestamp": 1782086400000,
-    "gold_oz": 4192.6001,
-    "silver_oz": 65.209,
+    "timestamp": 1782163800000,
+    "gold_oz": 4191.56,
+    "silver_oz": 64.372,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-23",
-    "timestamp": 1782172800000,
-    "gold_oz": 4112.0,
-    "silver_oz": 61.713,
+    "timestamp": 1782250200000,
+    "gold_oz": 4110.04,
+    "silver_oz": 65.07,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-24",
-    "timestamp": 1782259200000,
-    "gold_oz": 4000.3999,
-    "silver_oz": 57.552,
+    "timestamp": 1782336600000,
+    "gold_oz": 3999.3,
+    "silver_oz": 61.533,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-25",
-    "timestamp": 1782345600000,
-    "gold_oz": 4028.0,
-    "silver_oz": 58.001,
+    "timestamp": 1782423000000,
+    "gold_oz": 4026.48,
+    "silver_oz": 57.431,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-26",
-    "timestamp": 1782432000000,
-    "gold_oz": 4090.6001,
-    "silver_oz": 59.298,
+    "timestamp": 1782509400000,
+    "gold_oz": 4080.44,
+    "silver_oz": 57.846,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-29",
-    "timestamp": 1782691200000,
-    "gold_oz": 4017.6001,
-    "silver_oz": 58.426,
+    "timestamp": 1782768600000,
+    "gold_oz": 4016.44,
+    "silver_oz": 58.637,
     "source": "daily-sync"
   },
   {
     "date": "2026-06-30",
-    "timestamp": 1782777600000,
-    "gold_oz": 4008.7,
-    "silver_oz": 58.715,
+    "timestamp": 1782855000000,
+    "gold_oz": 4007.44,
+    "silver_oz": 58.28,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-01",
-    "timestamp": 1782864000000,
-    "gold_oz": 4032.3,
-    "silver_oz": 59.223,
+    "timestamp": 1782941400000,
+    "gold_oz": 4031.27,
+    "silver_oz": 58.571,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-02",
-    "timestamp": 1782950400000,
-    "gold_oz": 4123.8999,
-    "silver_oz": 61.083,
+    "timestamp": 1783027800000,
+    "gold_oz": 4123.51,
+    "silver_oz": 59.094,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-03",
-    "timestamp": 1783036800000,
-    "gold_oz": 4175.7,
-    "silver_oz": 62.3,
+    "timestamp": 1783114200000,
+    "gold_oz": 4175.03,
+    "silver_oz": 60.956,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-06",
-    "timestamp": 1783296000000,
-    "gold_oz": 4165.17,
-    "silver_oz": 61.89,
+    "timestamp": 1783373400000,
+    "gold_oz": 4165.13,
+    "silver_oz": 62.766,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-07",
-    "timestamp": 1783382400000,
-    "gold_oz": 4107.32,
-    "silver_oz": 60.04,
+    "timestamp": 1783459800000,
+    "gold_oz": 4106.08,
+    "silver_oz": 62.024,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-08",
-    "timestamp": 1783468800000,
-    "gold_oz": 4077.95,
-    "silver_oz": 58.32,
+    "timestamp": 1783546200000,
+    "gold_oz": 4077.67,
+    "silver_oz": 59.961,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-09",
-    "timestamp": 1783555200000,
-    "gold_oz": 4121.62,
-    "silver_oz": 60.02,
+    "timestamp": 1783632600000,
+    "gold_oz": 4123.55,
+    "silver_oz": 58.269,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-10",
-    "timestamp": 1783641600000,
-    "gold_oz": 4121.08,
-    "silver_oz": 59.87,
+    "timestamp": 1783719000000,
+    "gold_oz": 4119.06,
+    "silver_oz": 59.946,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-13",
-    "timestamp": 1783900800000,
-    "gold_oz": 4001.84,
-    "silver_oz": 57.67,
+    "timestamp": 1783978200000,
+    "gold_oz": 4001.01,
+    "silver_oz": 58.933,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-14",
-    "timestamp": 1783987200000,
-    "gold_oz": 4055.53,
-    "silver_oz": 58.68,
+    "timestamp": 1784064600000,
+    "gold_oz": 4053.0,
+    "silver_oz": 57.63,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-15",
-    "timestamp": 1784073600000,
-    "gold_oz": 4062.06,
-    "silver_oz": 57.8,
+    "timestamp": 1784151000000,
+    "gold_oz": 4059.93,
+    "silver_oz": 58.68,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-16",
-    "timestamp": 1784160000000,
-    "gold_oz": 3972.94,
-    "silver_oz": 55.53,
+    "timestamp": 1784237400000,
+    "gold_oz": 3976.28,
+    "silver_oz": 57.763,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-17",
-    "timestamp": 1784246400000,
-    "gold_oz": 4017.6,
-    "silver_oz": 55.95,
+    "timestamp": 1784323800000,
+    "gold_oz": 4016.66,
+    "silver_oz": 55.5,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-20",
-    "timestamp": 1784505600000,
-    "gold_oz": 4006.31,
-    "silver_oz": 56.44,
+    "timestamp": 1784583000000,
+    "gold_oz": 4007.74,
+    "silver_oz": 55.891,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-21",
-    "timestamp": 1784592000000,
-    "gold_oz": 4077.92,
-    "silver_oz": 58.81,
+    "timestamp": 1784669400000,
+    "gold_oz": 4077.88,
+    "silver_oz": 56.404,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-22",
-    "timestamp": 1784678400000,
-    "gold_oz": 4130.54,
-    "silver_oz": 59.73,
+    "timestamp": 1784755800000,
+    "gold_oz": 4130.15,
+    "silver_oz": 58.774,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-23",
-    "timestamp": 1784764800000,
-    "gold_oz": 4048.78,
-    "silver_oz": 57.7,
+    "timestamp": 1784842200000,
+    "gold_oz": 4049.57,
+    "silver_oz": 59.697,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-24",
-    "timestamp": 1784851200000,
-    "gold_oz": 4053.17,
-    "silver_oz": 58.19,
+    "timestamp": 1784928600000,
+    "gold_oz": 4053.07,
+    "silver_oz": 57.634,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-27",
-    "timestamp": 1785110400000,
-    "gold_oz": 4076.65,
-    "silver_oz": 58.43,
+    "timestamp": 1785187800000,
+    "gold_oz": 4076.44,
+    "silver_oz": 59.645,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-28",
-    "timestamp": 1785196800000,
-    "gold_oz": 4028.75,
-    "silver_oz": 57.17,
+    "timestamp": 1785274200000,
+    "gold_oz": 4028.41,
+    "silver_oz": 58.386,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-29",
-    "timestamp": 1785283200000,
-    "gold_oz": 4066.16,
-    "silver_oz": 57.67,
+    "timestamp": 1785360600000,
+    "gold_oz": 4066.43,
+    "silver_oz": 57.1,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-30",
-    "timestamp": 1785369600000,
-    "gold_oz": 4103.58,
-    "silver_oz": 59.01,
+    "timestamp": 1785447000000,
+    "gold_oz": 4103.86,
+    "silver_oz": 57.601,
     "source": "daily-sync"
   },
   {
     "date": "2026-07-31",
-    "timestamp": 1785456000000,
-    "gold_oz": 4042.67,
-    "silver_oz": 57.66,
+    "timestamp": 1785533400000,
+    "gold_oz": 4046.24,
+    "silver_oz": 58.973,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-03",
-    "timestamp": 1785715200000,
-    "gold_oz": 4053.45,
-    "silver_oz": 58.21,
+    "timestamp": 1785792600000,
+    "gold_oz": 4055.22,
+    "silver_oz": 58.298,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-04",
-    "timestamp": 1785801600000,
-    "gold_oz": 4077.65,
-    "silver_oz": 59.54,
+    "timestamp": 1785879000000,
+    "gold_oz": 4077.47,
+    "silver_oz": 58.168,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-05",
-    "timestamp": 1785888000000,
-    "gold_oz": 4247.02,
-    "silver_oz": 62.1,
+    "timestamp": 1785965400000,
+    "gold_oz": 4247.01,
+    "silver_oz": 59.506,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-06",
-    "timestamp": 1785974400000,
-    "gold_oz": 4252.47,
-    "silver_oz": 61.66,
+    "timestamp": 1786051800000,
+    "gold_oz": 4240.49,
+    "silver_oz": 62.023,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-07",
-    "timestamp": 1786060800000,
-    "gold_oz": 4343.2998,
-    "silver_oz": 63.707,
+    "timestamp": 1786138200000,
+    "gold_oz": 4341.49,
+    "silver_oz": 61.516,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-10",
-    "timestamp": 1786320000000,
-    "gold_oz": 4400.6001,
-    "silver_oz": 65.98,
+    "timestamp": 1786397400000,
+    "gold_oz": 4390.37,
+    "silver_oz": 63.497,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-11",
-    "timestamp": 1786406400000,
-    "gold_oz": 4367.1001,
-    "silver_oz": 64.903,
+    "timestamp": 1786483800000,
+    "gold_oz": 4368.0,
+    "silver_oz": 65.723,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-12",
-    "timestamp": 1786492800000,
-    "gold_oz": 4405.5,
-    "silver_oz": 65.288,
+    "timestamp": 1786570200000,
+    "gold_oz": 4408.66,
+    "silver_oz": 64.659,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-13",
-    "timestamp": 1786579200000,
-    "gold_oz": 4355.7998,
-    "silver_oz": 64.593,
+    "timestamp": 1786656600000,
+    "gold_oz": 4351.22,
+    "silver_oz": 65.304,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-14",
-    "timestamp": 1786665600000,
-    "gold_oz": 4377.6001,
-    "silver_oz": 64.827,
+    "timestamp": 1786743000000,
+    "gold_oz": 4376.16,
+    "silver_oz": 64.465,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-17",
-    "timestamp": 1786924800000,
-    "gold_oz": 4415.7002,
-    "silver_oz": 65.849,
+    "timestamp": 1787002200000,
+    "gold_oz": 4416.69,
+    "silver_oz": 64.791,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-18",
-    "timestamp": 1787011200000,
-    "gold_oz": 4334.7002,
-    "silver_oz": 63.298,
+    "timestamp": 1787088600000,
+    "gold_oz": 4334.45,
+    "silver_oz": 65.773,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-19",
-    "timestamp": 1787097600000,
-    "gold_oz": 4520.2002,
-    "silver_oz": 67.045,
+    "timestamp": 1787175000000,
+    "gold_oz": 4523.07,
+    "silver_oz": 63.311,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-20",
-    "timestamp": 1787184000000,
-    "gold_oz": 4523.0,
-    "silver_oz": 68.355,
+    "timestamp": 1787261400000,
+    "gold_oz": 4519.36,
+    "silver_oz": 66.991,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-21",
-    "timestamp": 1787270400000,
-    "gold_oz": 4604.3999,
-    "silver_oz": 69.108,
+    "timestamp": 1787347800000,
+    "gold_oz": 4604.8,
+    "silver_oz": 68.075,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-24",
-    "timestamp": 1787529600000,
-    "gold_oz": 4664.0,
-    "silver_oz": 69.032,
+    "timestamp": 1787607000000,
+    "gold_oz": 4651.9,
+    "silver_oz": 69.341,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-25",
-    "timestamp": 1787616000000,
-    "gold_oz": 4674.5,
-    "silver_oz": 69.226,
+    "timestamp": 1787693400000,
+    "gold_oz": 4658.84,
+    "silver_oz": 68.946,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-26",
-    "timestamp": 1787702400000,
-    "gold_oz": 4638.7998,
-    "silver_oz": 69.599,
+    "timestamp": 1787779800000,
+    "gold_oz": 4594.71,
+    "silver_oz": 68.655,
+    "source": "daily-sync"
+  },
+  {
+    "date": "2026-08-27",
+    "timestamp": 1787866200000,
+    "gold_oz": 4601.95,
+    "silver_oz": 68.103,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-28",
-    "timestamp": 1787875200000,
-    "gold_oz": 4456.3999,
-    "silver_oz": 66.503,
+    "timestamp": 1787952600000,
+    "gold_oz": 4454.26,
+    "silver_oz": 69.249,
     "source": "daily-sync"
   },
   {
     "date": "2026-08-31",
-    "timestamp": 1788134400000,
-    "gold_oz": 4446.5,
-    "silver_oz": 66.768,
+    "timestamp": 1788211800000,
+    "gold_oz": 4448.93,
+    "silver_oz": 66.417,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-01",
-    "timestamp": 1788220800000,
-    "gold_oz": 4326.2998,
-    "silver_oz": 64.24,
+    "timestamp": 1788298200000,
+    "gold_oz": 4328.34,
+    "silver_oz": 66.542,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-02",
-    "timestamp": 1788307200000,
-    "gold_oz": 4387.7998,
-    "silver_oz": 65.45,
+    "timestamp": 1788384600000,
+    "gold_oz": 4387.96,
+    "silver_oz": 64.059,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-03",
-    "timestamp": 1788393600000,
-    "gold_oz": 4481.3999,
-    "silver_oz": 67.104,
+    "timestamp": 1788471000000,
+    "gold_oz": 4473.09,
+    "silver_oz": 65.312,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-04",
-    "timestamp": 1788480000000,
-    "gold_oz": 4431.1001,
-    "silver_oz": 66.341,
+    "timestamp": 1788557400000,
+    "gold_oz": 4431.07,
+    "silver_oz": 66.959,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-07",
-    "timestamp": 1788739200000,
-    "gold_oz": 4425.1001,
-    "silver_oz": 66.563,
+    "timestamp": 1788816600000,
+    "gold_oz": 4406.05,
+    "silver_oz": 66.138,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-08",
-    "timestamp": 1788825600000,
-    "gold_oz": 4344.6001,
-    "silver_oz": 65.822,
+    "timestamp": 1788903000000,
+    "gold_oz": 4355.58,
+    "silver_oz": 66.137,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-09",
-    "timestamp": 1788912000000,
-    "gold_oz": 4397.8999,
-    "silver_oz": 67.428,
+    "timestamp": 1788989400000,
+    "gold_oz": 4401.85,
+    "silver_oz": 65.733,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-10",
-    "timestamp": 1788998400000,
-    "gold_oz": 4318.7998,
-    "silver_oz": 63.578,
+    "timestamp": 1789075800000,
+    "gold_oz": 4316.62,
+    "silver_oz": 67.268,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-11",
-    "timestamp": 1789084800000,
-    "gold_oz": 4349.7002,
-    "silver_oz": 64.622,
+    "timestamp": 1789162200000,
+    "gold_oz": 4348.33,
+    "silver_oz": 63.557,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-14",
-    "timestamp": 1789344000000,
-    "gold_oz": 4294.1001,
-    "silver_oz": 63.17,
+    "timestamp": 1789421400000,
+    "gold_oz": 4298.86,
+    "silver_oz": 63.893,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-15",
-    "timestamp": 1789430400000,
-    "gold_oz": 4281.8999,
-    "silver_oz": 63.742,
+    "timestamp": 1789507800000,
+    "gold_oz": 4294.12,
+    "silver_oz": 63.219,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-16",
-    "timestamp": 1789516800000,
-    "gold_oz": 4292.0,
-    "silver_oz": 63.617,
+    "timestamp": 1789594200000,
+    "gold_oz": 4263.87,
+    "silver_oz": 63.661,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-17",
-    "timestamp": 1789603200000,
-    "gold_oz": 4354.5,
-    "silver_oz": 65.704,
+    "timestamp": 1789680600000,
+    "gold_oz": 4341.59,
+    "silver_oz": 62.968,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-18",
-    "timestamp": 1789689600000,
-    "gold_oz": 4379.0,
-    "silver_oz": 66.377,
+    "timestamp": 1789767000000,
+    "gold_oz": 4378.45,
+    "silver_oz": 65.202,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-21",
-    "timestamp": 1789948800000,
-    "gold_oz": 4360.2002,
-    "silver_oz": 66.609,
+    "timestamp": 1790026200000,
+    "gold_oz": 4343.6,
+    "silver_oz": 66.31,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-22",
-    "timestamp": 1790035200000,
-    "gold_oz": 4360.1001,
-    "silver_oz": 67.504,
+    "timestamp": 1790112600000,
+    "gold_oz": 4358.62,
+    "silver_oz": 66.013,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-23",
-    "timestamp": 1790121600000,
-    "gold_oz": 4293.7002,
-    "silver_oz": 64.361,
+    "timestamp": 1790199000000,
+    "gold_oz": 4287.53,
+    "silver_oz": 67.048,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-24",
-    "timestamp": 1790208000000,
-    "gold_oz": 4270.6001,
-    "silver_oz": 63.705,
+    "timestamp": 1790285400000,
+    "gold_oz": 4274.16,
+    "silver_oz": 64.433,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-25",
-    "timestamp": 1790294400000,
-    "gold_oz": 4286.2002,
-    "silver_oz": 64.419,
+    "timestamp": 1790371800000,
+    "gold_oz": 4284.95,
+    "silver_oz": 63.84,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-28",
-    "timestamp": 1790553600000,
-    "gold_oz": 4132.0,
-    "silver_oz": 60.74,
+    "timestamp": 1790631000000,
+    "gold_oz": 4115.21,
+    "silver_oz": 63.712,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-29",
-    "timestamp": 1790640000000,
-    "gold_oz": 4171.7998,
-    "silver_oz": 61.13,
+    "timestamp": 1790717400000,
+    "gold_oz": 4182.53,
+    "silver_oz": 60.628,
     "source": "daily-sync"
   },
   {
     "date": "2026-09-30",
-    "timestamp": 1790726400000,
-    "gold_oz": 4165.0,
-    "silver_oz": 60.838,
+    "timestamp": 1790803800000,
+    "gold_oz": 4156.65,
+    "silver_oz": 61.466,
     "source": "daily-sync"
   },
   {
     "date": "2026-10-01",
-    "timestamp": 1790812800000,
-    "gold_oz": 4150.0,
-    "silver_oz": 60.385,
+    "timestamp": 1790890200000,
+    "gold_oz": 4177.51,
+    "silver_oz": 60.384,
     "source": "daily-sync"
   }
 ]
