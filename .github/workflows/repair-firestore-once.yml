@@ -1,0 +1,65 @@
+name: Repair Firestore prices (one-off)
+
+# Run this ONCE, manually, to push corrected gold/silver prices into Firestore.
+#
+# It reads history.json (already corrected and committed) as the source, so no
+# CSV needs to live in the repo. The service account comes from the same secret
+# the daily sync already uses.
+#
+# Trigger: Actions -> Repair Firestore prices (one-off) -> Run workflow
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repair-firestore
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests "google-cloud-firestore==2.14.0" "google-api-core==2.17.1"
+
+      - name: Write Firebase service account file
+        run: |
+          printf '%s' "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > serviceAccount.json
+          python -m json.tool serviceAccount.json > /dev/null
+
+      - name: Dry run (report only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: serviceAccount.json
+          FIRESTORE_COLLECTION: metals_daily_usd
+        run: |
+          python .github/scripts/repair_history_timestamps.py \
+            --source history.json \
+            --from 2026-05-01 --to 2026-10-01 \
+            --set-prices
+
+      - name: Apply to Firestore
+        env:
+          FIREBASE_SERVICE_ACCOUNT: serviceAccount.json
+          FIRESTORE_COLLECTION: metals_daily_usd
+        run: |
+          python .github/scripts/repair_history_timestamps.py \
+            --source history.json \
+            --from 2026-05-01 --to 2026-10-01 \
+            --set-prices --apply --firestore
+
+      - name: Cleanup key file
+        if: always()
+        run: rm -f serviceAccount.json
